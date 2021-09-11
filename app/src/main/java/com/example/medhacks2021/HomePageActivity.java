@@ -26,6 +26,8 @@ public class HomePageActivity extends AppCompatActivity {
         TextView points = findViewById(R.id.points_txt);
         points.setText(Long.toString(mainUser.getPoints()));
 
+        System.out.print("CURRENT USER: " + userManager.getCurrentUser().getName());
+        System.out.print("CURRENT USER PASS: " + userManager.getCurrentUser().getPassword());
         Button contactsBtn = findViewById(R.id.contacts_btn);
         contactsBtn.setOnClickListener(new View.OnClickListener() {
             @Override

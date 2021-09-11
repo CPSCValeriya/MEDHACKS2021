@@ -19,19 +19,26 @@ public class MainActivity extends AppCompatActivity {
 
         userManager = UserManager.getInstance();
 
-        Button btn = findViewById(R.id.login_btn);
-        btn.setOnClickListener(new View.OnClickListener() {
+        Button login_btn = findViewById(R.id.login_btn);
+        login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(userManager.getUsers().size() == 0){
                     Intent intent = new Intent(MainActivity.this, LogInActivity.class);
+                    intent.putExtra("Key","Login");
                     startActivity(intent);
-                }else{
-                    Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
-                    startActivity(intent);
-                }
 
+            }
+        });
+
+        Button signup_btn = findViewById(R.id.signup_btn);
+        signup_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+                    intent.putExtra("Key","Signup");
+                    startActivity(intent);
             }
         });
         //initial commit

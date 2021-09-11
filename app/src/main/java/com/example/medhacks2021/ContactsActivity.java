@@ -1,5 +1,7 @@
 package com.example.medhacks2021;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -10,8 +12,14 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,12 +30,17 @@ public class ContactsActivity extends AppCompatActivity {
     private ArrayAdapter<User> user;
     private ListView lstNames;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    private List<String> contacts;
+    private ArrayAdapter<User> adapter;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
         getSupportActionBar().hide();
+
+        userManager = UserManager.getInstance();
 
         this.lstNames = (ListView) findViewById(R.id.contacts_list);
         showContacts();
@@ -42,11 +55,42 @@ public class ContactsActivity extends AppCompatActivity {
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
         } else {
             // Android version is lesser than 6.0 or the permission is already granted.
-            List<String> contacts = getContactNames();
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, contacts);
+            contacts = getContactNames();
+
+            System.out.print("PRINTING CONTACTS: ");
+            for(int i = 0 ; i < contacts.size() ; i++){
+                System.out.print(contacts.get(i) + ", ");
+            }
+
+
+            adapter = new ContactsActivity.contactAdapter();
             lstNames.setAdapter(adapter);
         }
     }
+
+
+    private class contactAdapter extends ArrayAdapter<User>{
+        public contactAdapter(){
+            super(ContactsActivity.this, R.layout.contact_element, userManager.getUsers());
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+            View item = convertView;
+
+            if(item == null){
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                item = inflater.inflate(R.layout.contact_element,parent,false);
+            }
+
+            TextView name = (TextView) item.findViewById(R.id.contact_txt);
+            name.setText(userManager.getCurrentUser().getContacts().get(position).getName());
+            return item;
+        }
+    }
+
 
     @SuppressLint("MissingSuperCall")
     @Override
@@ -74,7 +118,10 @@ public class ContactsActivity extends AppCompatActivity {
             do {
                 // Get the contacts name
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+              //String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 contacts.add(name);
+                //'System.out.print("PHONE: " + phoneNumber);
+                userManager.addContact(new Contact(name, 0, "6043339622"));
             } while (cursor.moveToNext());
         }
         // Close the curosor
@@ -82,6 +129,5 @@ public class ContactsActivity extends AppCompatActivity {
 
         return contacts;
     }
-
 
 }
