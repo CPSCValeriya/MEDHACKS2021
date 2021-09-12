@@ -83,6 +83,8 @@ public class ContactsActivity extends AppCompatActivity {
             }
             TextView name = (TextView) item.findViewById(R.id.contact_txt);
             name.setText(userManager.getCurrentUser().getContacts().get(position).getName());
+            TextView pts = (TextView) item.findViewById(R.id.pointsTracker_txt);
+            pts.setText(Long.toString(userManager.getCurrentUser().getContacts().get(position).getPoints()));
             return item;
         }
     }
