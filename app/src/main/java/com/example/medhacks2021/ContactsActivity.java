@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
@@ -44,6 +45,7 @@ public class ContactsActivity extends AppCompatActivity {
 
         this.lstNames = (ListView) findViewById(R.id.contacts_list);
         showContacts();
+        clickContact();
 
     }
 
@@ -117,7 +119,8 @@ public class ContactsActivity extends AppCompatActivity {
     public void clickContact(){
         ListView list = findViewById(R.id.contacts_list);
         list.setOnItemClickListener((adapter, view, position, id)->{
-
+            Intent intent = new Intent(ContactsActivity.this, ChatActivity.class);
+            startActivity(intent);
         });
     }
 

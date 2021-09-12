@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Medhacks2021">
-        <activity android:name=".LogInActivity"></activity>
+        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".LogInActivity" />
         <activity android:name=".ContactsActivity" />
         <activity android:name=".HomePageActivity" />
         <activity android:name=".SignUpSuccessfulActivity" />
