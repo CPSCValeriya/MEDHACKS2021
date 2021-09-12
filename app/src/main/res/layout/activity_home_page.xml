@@ -180,4 +180,14 @@
         app:layout_constraintStart_toStartOf="@+id/guide_vert_65"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/logout_btn"
+        android:layout_width="158dp"
+        android:layout_height="89dp"
+        android:background="#00FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/schedule_btn" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

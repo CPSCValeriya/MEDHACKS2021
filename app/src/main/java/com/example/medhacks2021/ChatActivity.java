@@ -96,18 +96,6 @@ public class ChatActivity extends AppCompatActivity {
         }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if(adapter!=null) { adapter.clear() ; adapter.notifyDataSetChanged();}
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(adapter!=null) { adapter.clear(); adapter.notifyDataSetChanged(); }
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -149,7 +137,6 @@ public class ChatActivity extends AppCompatActivity {
                                     "You have been signed out.",
                                     Toast.LENGTH_LONG)
                                     .show();
-
                             // Close activity
                             finish();
                         }
@@ -159,8 +146,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void fetchMessages() {
-
-        if(adapter!=null){adapter.clear();}
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference().child("user");
@@ -172,7 +157,6 @@ public class ChatActivity extends AppCompatActivity {
                     String messageText = ds.child("messageText").getValue(String.class);
                     String messageUser = ds.child("messageUser").getValue(String.class);
                     sent.add(userManager.getCurrentUser().getName()+": "+messageText);
-                    adapter.clear();
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -193,7 +177,6 @@ public class ChatActivity extends AppCompatActivity {
                     String messageText = ds.getValue(String.class);
                     String messageUser = ds.getValue(String.class);
                     sent.add("                        "+messageText+"  : Mary Johan");
-                    adapter.clear();
                     adapter.notifyDataSetChanged();
                 }
             }

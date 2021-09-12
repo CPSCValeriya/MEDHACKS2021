@@ -46,11 +46,7 @@ public class HomePageActivity extends AppCompatActivity {
         watchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("current user: " + userManager.getCurrentUser().getName() + " with " + userManager.getCurrentUser().getPoints() + "points");
-                System.out.println("test add: " + userManager.getCurrentUser().getPoints()+10);
                 userManager.getCurrentUser().setPoints(userManager.getCurrentUser().getPoints()+10);
-                System.out.println("set: " + userManager.getCurrentUser().getName() + " with " + userManager.getCurrentUser().getPoints() + "points");
-
                 Intent intent = new Intent(HomePageActivity.this, WatchActivity.class);
                 startActivity(intent);
 
@@ -61,14 +57,20 @@ public class HomePageActivity extends AppCompatActivity {
         readBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("current user: " + userManager.getCurrentUser().getName() + " with " + userManager.getCurrentUser().getPoints() + "points");
-                System.out.println("test add: " + userManager.getCurrentUser().getPoints()+10);
                 userManager.getCurrentUser().setPoints(userManager.getCurrentUser().getPoints()+10);
-                System.out.println("set: " + userManager.getCurrentUser().getName() + " with " + userManager.getCurrentUser().getPoints() + "points");
-
                 Intent intent = new Intent(HomePageActivity.this, ReadActivity.class);
                 startActivity(intent);
 
+            }
+        });
+
+        Button logoutBtn = findViewById(R.id.logout_btn);
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i= new Intent(HomePageActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
             }
         });
 
