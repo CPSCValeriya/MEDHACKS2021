@@ -60,21 +60,18 @@ public class ChatActivity extends AppCompatActivity {
             // Start sign in/sign up activity
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().build(), SIGN_IN_REQUEST_CODE);
         } else {
-            // User is already signed in. Therefore, display
-            // a welcome Toast
             Toast.makeText(this,
                     "Welcome, " + userManager.getCurrentUser().getName(),
                     Toast.LENGTH_LONG)
                     .show();
-
-            // Load chat room contents
-           // displayChatMessages();
-
         }
 
-            FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        fetchMessages();
+        sendMsgFromValerie();
+        populateChat();
 
-            fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     EditText input = (EditText)findViewById(R.id.input);
@@ -93,8 +90,6 @@ public class ChatActivity extends AppCompatActivity {
                     userManager.getCurrentUser().setPoints(userManager.getCurrentUser().getPoints()+1);
                     // Clear the input
                     input.setText("");
-                    populateChat();
-                    fetchMessages();
                 }
             });
 
@@ -103,13 +98,13 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(adapter!=null) {adapter.notifyDataSetChanged();}
+        if(adapter!=null) { adapter.clear() ; adapter.notifyDataSetChanged();}
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(adapter!=null) { adapter.notifyDataSetChanged();}
+        if(adapter!=null) { adapter.clear(); adapter.notifyDataSetChanged(); }
     }
 
     @Override
@@ -165,7 +160,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void fetchMessages() {
 
-        sendMsgFromValerie();
+        if(adapter!=null){adapter.clear();}
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference().child("user");
@@ -177,6 +172,7 @@ public class ChatActivity extends AppCompatActivity {
                     String messageText = ds.child("messageText").getValue(String.class);
                     String messageUser = ds.child("messageUser").getValue(String.class);
                     sent.add(userManager.getCurrentUser().getName()+": "+messageText);
+                    adapter.clear();
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -197,6 +193,7 @@ public class ChatActivity extends AppCompatActivity {
                     String messageText = ds.getValue(String.class);
                     String messageUser = ds.getValue(String.class);
                     sent.add("                        "+messageText+"  : Mary Johan");
+                    adapter.clear();
                     adapter.notifyDataSetChanged();
                 }
             }
