@@ -3,9 +3,11 @@ package com.example.medhacks2021;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,22 +23,35 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 //https://code.tutsplus.com/tutorials/how-to-create-an-android-chat-app-using-firebase--cms-27397
 public class ChatActivity extends AppCompatActivity {
 
-    private FirebaseListAdapter<ChatMessage> adapter;
+    private ArrayAdapter<String> adapter;
     private static final int SIGN_IN_REQUEST_CODE = 123;
+    List<String> sent ;
+    List<String> received ;
+    ListView msgs ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        sent = new ArrayList<>();
+        received = new ArrayList<>();
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null) {
             // Start sign in/sign up activity
@@ -52,7 +67,8 @@ public class ChatActivity extends AppCompatActivity {
                     .show();
 
             // Load chat room contents
-            displayChatMessages();
+           // displayChatMessages();
+
         }
 
             FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
@@ -66,6 +82,7 @@ public class ChatActivity extends AppCompatActivity {
                     // of ChatMessage to the Firebase database
                     FirebaseDatabase.getInstance()
                             .getReference()
+                            .child("user")
                             .push()
                             .setValue(new ChatMessage(input.getText().toString(),
                                     FirebaseAuth.getInstance()
@@ -75,43 +92,23 @@ public class ChatActivity extends AppCompatActivity {
 
                     // Clear the input
                     input.setText("");
+                    populateChat();
+                    fetchMessages();
                 }
             });
 
         }
 
-    private void displayChatMessages() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(adapter!=null) {adapter.notifyDataSetChanged();}
+    }
 
-        ListView listOfMessages = (ListView) findViewById(R.id.list_of_messages);
-        Query query = FirebaseDatabase.getInstance().getReference().child("chats");
-        FirebaseListOptions<ChatMessage> options =
-                new FirebaseListOptions.Builder<ChatMessage>()
-                        .setQuery(query, ChatMessage.class)
-                        .setLayout(R.layout.message)
-                        .build();
-        adapter = new FirebaseListAdapter<ChatMessage>(options){
-            @Override
-            protected void populateView(View v, ChatMessage model, int position) {
-                //Get references to the views of messages.xml
-                TextView messageText = (TextView) v.findViewById(R.id.message_body);
-                TextView messageUser = (TextView) v.findViewById(R.id.message_user);
-                TextView messageTime = (TextView) v.findViewById(R.id.message_time);
-
-                // Set their text
-                messageText.setText(model.getMessageText());
-                messageUser.setText(model.getMessageUser());
-
-                //Format the date before showing it
-                Calendar c = Calendar.getInstance();
-                int hour = c.get(Calendar.HOUR);
-                int minute = c.get(Calendar.MINUTE);
-                messageTime.setText(hour + ":" + minute);
-            }
-
-        };
-
-        listOfMessages.setAdapter(adapter);
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(adapter!=null) { adapter.notifyDataSetChanged();}
     }
 
     @Override
@@ -125,7 +122,7 @@ public class ChatActivity extends AppCompatActivity {
                         "Successfully signed in. Welcome!",
                         Toast.LENGTH_LONG)
                         .show();
-                displayChatMessages();
+              //  displayChatMessages();
             } else {
                 Toast.makeText(this,
                         "We couldn't sign you in. Please try again later.",
@@ -165,5 +162,72 @@ public class ChatActivity extends AppCompatActivity {
         return true;
     }
 
+    public void fetchMessages() {
+
+        sendMsgFromValerie();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference().child("user");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String messageText = ds.child("messageText").getValue(String.class);
+                    String messageUser = ds.child("messageUser").getValue(String.class);
+                    sent.add(messageUser+": "+messageText);
+                    adapter.notifyDataSetChanged();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                throw databaseError.toException();
+            }
+        });
+
+        FirebaseDatabase databaseRec = FirebaseDatabase.getInstance();
+        DatabaseReference myRefRec = databaseRec.getReference().child("Mary Johan");
+
+        myRefRec.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String messageText = ds.child("messageText").getValue(String.class);
+                    String messageUser = ds.child("messageUser").getValue(String.class);
+                    sent.add(messageUser+": "+messageText);
+                    String messageTextRec = ds.child("messageText").getValue(String.class);
+                    String messageUserRec = ds.child("messageUser").getValue(String.class);
+                    sent.add("                       "+messageText+" :"+messageUser);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                throw databaseError.toException();
+            }
+        });
+    }
+
+    public void populateChat(){
+
+        msgs = (ListView) findViewById(R.id.list_of_messages);
+        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, sent);
+        msgs.setAdapter(adapter);
+
+    }
+
+    private void sendMsgFromValerie() {
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("Mary Johan")
+                .push()
+                .setValue("Hi mum! How are you?"
+                );
+
+    }
 
 }

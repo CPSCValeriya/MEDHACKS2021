@@ -44,4 +44,12 @@ public class ChatMessage {
         this.messageTime = messageTime;
     }
 
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "messageText='" + messageText + '\'' +
+                ", messageUser='" + messageUser + '\'' +
+                ", messageTime=" + messageTime +
+                '}';
+    }
 }
