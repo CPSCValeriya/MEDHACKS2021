@@ -44,12 +44,15 @@ public class ChatActivity extends AppCompatActivity {
     List<String> sent ;
     List<String> received ;
     ListView msgs ;
+    UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        getSupportActionBar().hide();
 
+        userManager = UserManager.getInstance();
         sent = new ArrayList<>();
         received = new ArrayList<>();
 
@@ -60,9 +63,7 @@ public class ChatActivity extends AppCompatActivity {
             // User is already signed in. Therefore, display
             // a welcome Toast
             Toast.makeText(this,
-                    "Welcome " + FirebaseAuth.getInstance()
-                            .getCurrentUser()
-                            .getDisplayName(),
+                    "Welcome, " + userManager.getCurrentUser().getName(),
                     Toast.LENGTH_LONG)
                     .show();
 
@@ -89,7 +90,7 @@ public class ChatActivity extends AppCompatActivity {
                                             .getCurrentUser()
                                             .getDisplayName())
                             );
-
+                    userManager.getCurrentUser().setPoints(userManager.getCurrentUser().getPoints()+1);
                     // Clear the input
                     input.setText("");
                     populateChat();
@@ -175,9 +176,8 @@ public class ChatActivity extends AppCompatActivity {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                     String messageText = ds.child("messageText").getValue(String.class);
                     String messageUser = ds.child("messageUser").getValue(String.class);
-                    sent.add(messageUser+": "+messageText);
+                    sent.add(userManager.getCurrentUser().getName()+": "+messageText);
                     adapter.notifyDataSetChanged();
-
                 }
             }
 
@@ -194,12 +194,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String messageText = ds.child("messageText").getValue(String.class);
-                    String messageUser = ds.child("messageUser").getValue(String.class);
-                    sent.add(messageUser+": "+messageText);
-                    String messageTextRec = ds.child("messageText").getValue(String.class);
-                    String messageUserRec = ds.child("messageUser").getValue(String.class);
-                    sent.add("                       "+messageText+" :"+messageUser);
+                    String messageText = ds.getValue(String.class);
+                    String messageUser = ds.getValue(String.class);
+                    sent.add("                        "+messageText+"  : Mary Johan");
                     adapter.notifyDataSetChanged();
                 }
             }
