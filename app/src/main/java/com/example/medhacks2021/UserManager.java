@@ -51,6 +51,8 @@ public class UserManager {
         return instance == null;
     }
     public void addContact(Contact contact){
+        System.out.print("CURRENT USER: " + currentUser.getName());
+        System.out.print("ADDING CONTACT " + contact.getName());
         currentUser.getContacts().add(contact);
     }
 

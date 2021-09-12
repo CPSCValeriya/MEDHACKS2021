@@ -29,14 +29,20 @@ public class SignUpActivity extends AppCompatActivity {
                 EditText userName = (EditText) findViewById(R.id.entername_txt);
                 String userNameText = userName.getText().toString();
                 userManager = userManager.getInstance();
+
                 User currentUser = new User(userNameText, 10,"6045553333");
+
+                System.out.println("new user: " + currentUser.getName());
+
                 userManager.addUsers(currentUser);
+                //*****
                 userManager.setCurrentUser(currentUser);
                 userManager.getUniquePasswords().add(userManager.getCurrentPassword());
+
                 userManager.toString();
 
-                System.out.print("sign up CURRENT USER: " + userManager.getCurrentUser().getName());
-                System.out.print("sign up CURRENT USER PASS: " + userManager.getCurrentUser().getPassword());
+                System.out.println("sign up CURRENT USER: " + userManager.getCurrentUser().getName());
+                System.out.println("sign up CURRENT USER PASS: " + userManager.getCurrentUser().getPassword());
 
                 Intent intent = new Intent(SignUpActivity.this, SignUpSuccessfulActivity.class);
                 startActivity(intent);
